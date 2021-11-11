@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  app:
+    image: raoptimus/go-magick:latest
+    working_dir: "/usr/src/app"
+    command: "sleep infinity"
+    depends_on:
+      - clickhouse
+      - clickhouse1
+      - clickhouse2
+      - postgres
+    volumes:
+      - "./:/usr/src/app"
+    env_file:
+      - .env
+

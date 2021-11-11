@@ -1,9 +1,12 @@
-# nats-streaming-proxy
-Write to the [NATS Streaming](https://nats.io/documentation/streaming/nats-streaming-intro/) via Memcached protocol.
+# nats-proxy
+Write to the [NATS](https://docs.nats.io/developing-with-nats/developer) via Memcached protocol.
+
+# docker
+See [Docker](https://hub.docker.com/r/raoptimus/memcached-nats-proxy)
 
 ## Why?
 
-Because some script languages don't have a high performance NATS Streaming clients, but have a good Memcached client :)
+Because some script languages don't have a high performance NATS clients, but have a good Memcached client :)
 
 ### Example PHP client with connection pool.
 

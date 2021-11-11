@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	nats "github.com/nats-io/go-nats-streaming"
+	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
 )
 
