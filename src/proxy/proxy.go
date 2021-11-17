@@ -17,6 +17,7 @@ type Options struct {
 	MetricsAddr      string
 	NatsPublishAsync bool
 	NatsURL          string
+	MaxInFlight      int
 }
 
 // New NATS Steaming proxy
@@ -30,22 +31,24 @@ func New(version string, options Options) (_ *Proxy, err error) {
 		connOpts = []nats.Option{
 			nats.MaxPingsOutstanding(10),
 			nats.PingInterval(120 * time.Second),
+			nats.RetryOnFailedConnect(true),
+			nats.ReconnectWait(3 * time.Second),
 			nats.DisconnectErrHandler(func(conn *nats.Conn, err error) {
-				log.Errorf("Got disconnected! Reason:: %q\n", err)
+				log.Warningf("Got disconnected! Reason:: %q\n", err)
 				proxy.signals <- syscall.SIGTERM
 			}),
 			nats.ReconnectHandler(func(nc *nats.Conn) {
-				log.Errorf("Got reconnected to %v!\n", nc.ConnectedUrl())
+				log.Warningf("Got reconnected to %v!\n", nc.ConnectedUrl())
 			}),
 			nats.ClosedHandler(func(nc *nats.Conn) {
-				log.Errorf("Connection closed. Reason: %q\n", nc.LastError())
+				log.Warningf("Connection closed. Reason: %q\n", nc.LastError())
 			}),
 		}
 	)
 	if proxy.nats.conn, err = nats.Connect(options.NatsURL, connOpts...); err != nil {
 		return nil, err
 	}
-	if proxy.nats.js, err = proxy.nats.conn.JetStream(nats.PublishAsyncMaxPending(256)); err != nil {
+	if proxy.nats.js, err = proxy.nats.conn.JetStream(nats.PublishAsyncMaxPending(options.MaxInFlight)); err != nil {
 		return nil, err
 	}
 
@@ -57,6 +60,7 @@ func New(version string, options Options) (_ *Proxy, err error) {
 	)
 	go metrics(options.MetricsAddr)
 	go proxy.waitSignal()
+
 	return &proxy, nil
 }
 

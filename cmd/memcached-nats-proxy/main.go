@@ -59,6 +59,12 @@ func main() {
 			EnvVar: "DEBUG",
 			Usage:  "Enable debug mode.",
 		},
+		cli.IntFlag{
+			Name:   "max-in-flight",
+			EnvVar: "MAX_IN_FLIGHT",
+			Usage:  "conn.JetStream(nats.MaxInFlight(x))",
+			Value:  256,
+		},
 	}
 	app.Action = func(c *cli.Context) error {
 		switch {
@@ -74,6 +80,7 @@ func main() {
 			NatsPublishAsync: c.Bool("nats-publish-async"),
 			MetricsAddr:      c.String("metrics-addr"),
 			ServerAddr:       c.String("server-addr"),
+			MaxInFlight:      c.Int("max-in-flight"),
 		})
 		if err != nil {
 			return err

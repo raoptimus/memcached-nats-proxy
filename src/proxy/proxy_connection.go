@@ -101,6 +101,7 @@ func (conn *connect) handle() error {
 			}
 			switch err := conn.publish(subject, value[:length]); {
 			case err != nil:
+				log.Errorf("cannot publish message to nats: %v", err)
 				conn.net.Write(StatusNotStored)
 				{
 					reqFailedProm.WithLabelValues(subject).Inc()
