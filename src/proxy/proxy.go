@@ -35,7 +35,6 @@ func New(version string, options Options) (_ *Proxy, err error) {
 			nats.ReconnectWait(3 * time.Second),
 			nats.DisconnectErrHandler(func(conn *nats.Conn, err error) {
 				log.Warningf("Got disconnected! Reason:: %q\n", err)
-				proxy.signals <- syscall.SIGTERM
 			}),
 			nats.ReconnectHandler(func(nc *nats.Conn) {
 				log.Warningf("Got reconnected to %v!\n", nc.ConnectedUrl())
